@@ -1,0 +1,51 @@
+---
+- name: Create mandatory directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+  loop:
+    - /etc/nginx
+    - /etc/nginx/nginx-confs
+    - /var/log/nginx
+
+- name: Set log files
+  file:
+    path: "{{ item }}"
+    state: touch
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+  loop:
+    - /var/log/nginx/error.log
+    - /var/log/nginx/access.log
+
+- name: Upload the docker-compose.yml file
+  template:
+    src: "templates/docker-compose.yaml.j2"
+    dest: "/etc/nginx/docker-compose.yaml"
+    owner : "{{ ansible_user }}"
+
+- name: Upload the nginx.conf file
+  copy:
+    src: "{{ nginx_default_conf_path }}"
+    dest: /etc/nginx/
+    owner : "{{ ansible_user }}"
+
+- name: nginx conf message
+  debug:
+    msg: "The variable nginx_custom_confs_path is mandatory to deploy other nginx confs"
+  when: nginx_custom_confs_path is undefined
+
+- name: Upload nginx custom confs
+  copy:
+    src: "{{ nginx_custom_confs_path }}/"
+    dest: /etc/nginx/nginx-confs
+  when: nginx_custom_confs_path is defined
+
+- name: Launch nginx container
+  community.docker.docker_compose_v2:
+    project_src: "/etc/nginx/"
+    state: present

@@ -1,0 +1,22 @@
+
+services:
+  reverseproxy:
+    image: nginx:latest
+    container_name: {{ nginx_container_name }}
+    restart: always
+    volumes:
+{% for volume in nginx_container_volume %}
+      - {{ volume }}
+{% endfor %}
+    ports:
+      - {{ nginx_port }}:80
+{% if nginx_docker_network is true %}
+    networks:
+      - {{ nginx_docker_network_name | mandatory }}
+{% endif %}
+
+{% if nginx_docker_network is true %}
+networks:
+  {{ nginx_docker_network_name | mandatory }}:
+    driver: bridge
+{% endif %}
