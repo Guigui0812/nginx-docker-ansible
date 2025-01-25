@@ -25,6 +25,11 @@ Role Variables
 | `nginx_default_conf_path` | Default path of the `nginx.conf` file |
 | `nginx_custom_confs_path` | Path to custom nginx configuration files |
 
+Dependencies
+------------
+
+This role has no external dependencies.
+
 Example Playbook
 ----------------
 
