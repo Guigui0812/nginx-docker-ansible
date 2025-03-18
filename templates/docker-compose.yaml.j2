@@ -9,7 +9,9 @@ services:
 {% endfor %}
     ports:
       - {{ nginx_http_port }}:80
+{% if nginx_https_port is true %}
       - {{ nginx_https_port }}:443
+{% endif %}
 {% if nginx_docker_network is true %}
     networks:
       - {{ nginx_docker_network_name | mandatory }}
