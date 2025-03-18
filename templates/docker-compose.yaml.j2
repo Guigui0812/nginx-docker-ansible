@@ -18,7 +18,7 @@ services:
 {% endif %}
 {% if nginx_docker_network_mode %}
     network_mode: {{ nginx_docker_network_mode }}
-{% enfidf %}
+{% endif %}
 {% if nginx_docker_network is true %}
 networks:
   {{ nginx_docker_network_name | mandatory }}:
