@@ -1,22 +1,39 @@
 ---
-- name: Create mandatory directories
+- name: nginx conf message
+  debug:
+    msg: "The variable nginx_custom_confs_path is mandatory to deploy other nginx confs"
+  when: nginx_custom_confs_path is undefined
+
+- name: Create nginx user
+  user:
+    name: nginx
+    group: nginx
+
+- name: Create nginx directories
   file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    owner: nginx
+    group: nginx
     mode: 0755
   loop:
-    - /etc/nginx
-    - /etc/nginx/nginx-confs
-    - /var/log/nginx
+    - /opt/nginx
+    - /opt/nginx/nginx.d
+
+- name: Create nginx log directory
+  file:
+    path: /var/log/nginx
+    state: directory
+    owner: root
+    group: logs-readers
+    mode: 0755
 
 - name: Set log files
   file:
     path: "{{ item }}"
     state: touch
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    owner: nginx
+    group: nginx
     mode: 0755
   loop:
     - /var/log/nginx/error.log
@@ -25,27 +42,24 @@
 - name: Upload the docker-compose.yml file
   template:
     src: "templates/docker-compose.yaml.j2"
-    dest: "/etc/nginx/docker-compose.yaml"
-    owner : "{{ ansible_user }}"
+    dest: "/opt/nginx/docker-compose.yaml"
+    owner: nginx
+    group: nginx
 
 - name: Upload the nginx.conf file
   copy:
     src: "{{ nginx_default_conf_path }}"
-    dest: /etc/nginx/
-    owner : "{{ ansible_user }}"
-
-- name: nginx conf message
-  debug:
-    msg: "The variable nginx_custom_confs_path is mandatory to deploy other nginx confs"
-  when: nginx_custom_confs_path is undefined
+    dest: /opt/nginx/nginx.conf
+    owner: nginx
+    group:  nginx
 
 - name: Upload nginx custom confs
   copy:
     src: "{{ nginx_custom_confs_path }}/"
-    dest: /etc/nginx/nginx-confs
+    dest: /opt/nginx/nginx.d
   when: nginx_custom_confs_path is defined
 
 - name: Launch nginx container
   community.docker.docker_compose_v2:
-    project_src: "/etc/nginx/"
+    project_src: "/opt/nginx/"
     state: present
