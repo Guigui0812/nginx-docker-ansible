@@ -8,11 +8,15 @@ services:
       - {{ volume }}
 {% endfor %}
     ports:
-      - {{ nginx_port }}:80
+      - {{ nginx_http_port }}:80
+      - {{ nginx_https_port }}:443
 {% if nginx_docker_network is true %}
     networks:
       - {{ nginx_docker_network_name | mandatory }}
 {% endif %}
+{% if nginx_docker_network_mode %}
+    network_mode: {{ nginx_docker_network_mode }}
+{% enfidf %}
 {% if nginx_docker_network is true %}
 networks:
   {{ nginx_docker_network_name | mandatory }}:
