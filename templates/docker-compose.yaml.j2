@@ -7,9 +7,14 @@ services:
 {% for volume in nginx_container_volume %}
       - {{ volume }}
 {% endfor %}
+{% if nginx_tls %}
+{% for volume in nginx_ssl_volume %}
+      - {{ volume }}
+{% endfor %}
+{% endif %}
     ports:
       - {{ nginx_http_port }}:80
-{% if nginx_https_port is true %}
+{% if nginx_tls is true %}
       - {{ nginx_https_port }}:443
 {% endif %}
 {% if nginx_docker_network is true %}

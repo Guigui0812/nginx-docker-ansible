@@ -7,3 +7,8 @@ nginx_container_volume:
   - "/var/log/nginx:/var/log/nginx:rw"
 nginx_docker_network: false
 nginx_default_conf_path: files/nginx.conf
+
+nginx_tls: true
+nginx_https_port: 443
+nginx_ssl_volume:
+  - "/opt/nginx/ssl:/etc/nginx/ssl/"
