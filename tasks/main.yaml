@@ -52,12 +52,14 @@
     dest: /opt/nginx/nginx.conf
     owner: nginx
     group:  nginx
+  notify: Restart nginx container
 
 - name: Upload nginx custom confs
   copy:
     src: "{{ nginx_custom_confs_path }}/"
     dest: /opt/nginx/nginx.d
   when: nginx_custom_confs_path is defined
+  notify: Restart nginx container
 
 - name: Launch nginx container
   community.docker.docker_compose_v2:

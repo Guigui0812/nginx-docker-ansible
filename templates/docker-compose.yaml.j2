@@ -21,7 +21,7 @@ services:
     networks:
       - {{ nginx_docker_network_name | mandatory }}
 {% endif %}
-{% if nginx_docker_network_mode %}
+{% if nginx_docker_network_mode is defined %}
     network_mode: {{ nginx_docker_network_mode }}
 {% endif %}
 {% if nginx_docker_network is true %}
